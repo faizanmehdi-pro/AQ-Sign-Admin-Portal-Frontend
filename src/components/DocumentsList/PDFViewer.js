@@ -232,47 +232,61 @@ const Counter = styled.div`
 const ImageCarousel = ({ setFileView, selectedDocumentID, selectedCustomerID, selectedSignatureImg }) => {
     console.log("img", selectedSignatureImg, selectedCustomerID)
     const queryClient = useQueryClient();
-    
+    const imageRef = React.useRef(null);
+    const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+
     const [pageNumber, setPageNumber] = useState(0);
     const [signatures, setSignatures] = useState([]);
     const [hoveredSignatureIndex, setHoveredSignatureIndex] = useState(null);
     const [saveLoading, setSaveLoading] = useState(false);
+    const [pageLoading, setPageLoading] = useState(false);
 
-    const { data: images = [], isLoading, isError } = useQuery({
-        queryKey: ["images"],
+    const {
+        data: images = [],
+        isLoading,
+        isError,
+        refetch,
+      } = useQuery({
+        queryKey: ["images", selectedDocumentID],
         queryFn: () => getDocumentImages({ docID: selectedDocumentID }),
         keepPreviousData: false,
-    });
+        staleTime: 0,
+      });
+      
 
-    const saveMutation = useMutation({
+      const saveMutation = useMutation({
         mutationFn: updateDocument,
         onSuccess: () => {
-            toast.success("Signatures Placed successfully!");
-            queryClient.invalidateQueries(["images"]);
-            setSaveLoading(false);
-            setSignatures([]);
-            setFileView(false);
+          toast.success("Signatures Placed successfully!");
+          refetch(); // force fresh images
+          setSaveLoading(false);
+          setSignatures([]);
+          setFileView(false);
         },
         onError: (error) => {
-            console.error("Failed to place signatures:", error);
-            toast.error("Failed to place signatures. Please try again.");
-            setSaveLoading(false);
+          console.error("Failed to place signatures:", error);
+          toast.error("Failed to place signatures. Please try again.");
+          setSaveLoading(false);
         }
-    });
-    
-
+      });      
 
     const addSignature = () => {
+        if (imageRef.current) {
+            const width = imageRef.current.offsetWidth;
+            const height = imageRef.current.offsetHeight;
+
+            setCanvasSize({ width, height });
+        }
         setSignatures([...signatures, {
             id: Date.now(), // Unique identifier
             pageNumber,
-            imageId: images.slice().reverse()[pageNumber]?.id, // Add current image ID
+            imageId: images[pageNumber]?.id, // Add current image ID
             position: { x: 50, y: 50 },
             size: { width: 200, height: 100 },
             image: logo
         }]);
     };
-    
+
 
     // Function to update position and size of a specific signature
     const updateSignature = (id, newPosition, newSize) => {
@@ -287,23 +301,57 @@ const ImageCarousel = ({ setFileView, selectedDocumentID, selectedCustomerID, se
     };
 
     const handleNext = () => {
-        if (pageNumber < images.length - 1) setPageNumber(pageNumber + 1);
+        if (pageNumber < images.length - 1 && !pageLoading) {
+            setPageLoading(true);
+            setTimeout(() => {
+                setPageNumber(prev => prev + 1);
+                setPageLoading(false);
+            }, 300); // simulate load time
+        }
     };
-
-    const handlePrev = () => {
-        if (pageNumber > 0) setPageNumber(pageNumber - 1);
-    };
-
     
+    const handlePrev = () => {
+        if (pageNumber > 0 && !pageLoading) {
+            setPageLoading(true);
+            setTimeout(() => {
+                setPageNumber(prev => prev - 1);
+                setPageLoading(false);
+            }, 300); // simulate load time
+        }
+    };
+      
+
+
+    useEffect(() => {
+        if (imageRef.current) {
+            setCanvasSize({
+                width: imageRef.current.offsetWidth,
+                height: imageRef.current.offsetHeight,
+            });
+        }
+    }, [images, pageNumber]);
+
     // useEffect(() => {
     //     console.log("Updated Signatures:", signatures);
     // }, [signatures]);
 
     const handleSave = () => {
         setSaveLoading(true);
-        
-        saveMutation.mutate({ docID: selectedDocumentID, customer_id: selectedCustomerID, signatures: [...signatures] });
+
+        const payload = {
+            docID: selectedDocumentID,
+            customer_id: selectedCustomerID,
+            signatures: [...signatures],
+            canvasSize: canvasSize,
+        };
+
+        saveMutation.mutate(payload);
     };
+
+    const getImageSrc = (img) => {
+        if (!img) return "";
+        return `${img}?t=${new Date().getTime()}`; // bust browser cache
+      };
 
     if (isLoading) return <Container><LoaderContainer><ListLoader /></LoaderContainer></Container>;
     if (isError) return <Container>Error fetching images</Container>;
@@ -315,24 +363,24 @@ const ImageCarousel = ({ setFileView, selectedDocumentID, selectedCustomerID, se
                     <IoMdArrowRoundBack size={22} color="#1976d2" />
                     Go Back
                 </BackButton>
-                
+
                 <PDFTopbarRight>
-                {selectedSignatureImg !== "null" ? (
-  <>
-                    <PlaceSignature onClick={addSignature}>
-                        Place Signature
-                    </PlaceSignature>
-                   
-                    <Approval onClick={handleSave} disabled={saveLoading}>
-    {saveLoading ? <Loader /> : "Save"}
-</Approval>
-</>
-) : (
-<h5>Customer has not signed the document</h5>
-)}
+                    {selectedSignatureImg !== "null" ? (
+                        <>
+                            <PlaceSignature onClick={addSignature}>
+                                Place Signature
+                            </PlaceSignature>
+
+                            <Approval onClick={handleSave} disabled={saveLoading}>
+                                {saveLoading ? <Loader /> : "Save"}
+                            </Approval>
+                        </>
+                    ) : (
+                        <h5>Customer has not signed the document</h5>
+                    )}
                 </PDFTopbarRight>
             </PDFTopbar>
-            <Container>                
+            <Container>
                 <PageInfo>
                     <PageInfoButtons>
                         <PageInfoButton onClick={handlePrev} disabled={pageNumber === 0}>Prev</PageInfoButton>
@@ -341,47 +389,64 @@ const ImageCarousel = ({ setFileView, selectedDocumentID, selectedCustomerID, se
                     </PageInfoButtons>
                 </PageInfo>
                 <ImageContainer>
-                    {/* <StyledImage 
-                        src={images[pageNumber]?.img}
-                        alt={`Image ${images[pageNumber]?.id}`}
-                    /> */}
-                    <StyledImage 
-        src={images.slice().reverse()[pageNumber]?.img} 
-        alt={`Image ${images.slice().reverse()[pageNumber]?.id}`} 
-    />  
-                   {signatures.map((signature, index) => (
-                        signature.pageNumber === pageNumber && (
-                            <Rnd
-                                key={signature.id}
-                                size={signature.size}
-                                position={signature.position}
-                                onDragStop={(e, d) => updateSignature(signature.id, { x: d.x, y: d.y }, signature.size)}
-                                onResizeStop={(e, direction, ref, delta, position) => {
-                                    updateSignature(signature.id, position, { width: ref.offsetWidth, height: ref.offsetHeight });
-                                }}
-                                onMouseEnter={() => setHoveredSignatureIndex(index)}
-                                onMouseLeave={() => setHoveredSignatureIndex(null)}
-                                style={{
-                                    cursor: 'move', position: 'absolute',
-                                    zIndex: hoveredSignatureIndex === index ? 10 : 4,
-                                    border: hoveredSignatureIndex === index ? '2px dotted #007BFF' : 'none',
-                                }}
-                            >
-                                <SignatureBox>
-  <img 
-    src={selectedSignatureImg} 
-    alt="null" 
-  />
-                                    {hoveredSignatureIndex === index &&
-                                    <EditCard>
-                                        <EditIcon onClick={() => removeSignature(signature.id)}>✖</EditIcon>
-                                    </EditCard>
-}
-                                </SignatureBox>
-                            </Rnd>
-                        )
-                    ))}
-                </ImageContainer>
+    {pageLoading ? (
+        <LoaderContainer><ListLoader /></LoaderContainer>
+    ) : (
+        <>
+<StyledImage
+  key={images[pageNumber]?.id}
+  ref={imageRef}
+  src={getImageSrc(images[pageNumber]?.img)}
+  alt={`Image ${images[pageNumber]?.id}`}
+  onLoad={() => {
+    if (imageRef.current) {
+      setCanvasSize({
+        width: imageRef.current.offsetWidth,
+        height: imageRef.current.offsetHeight,
+      });
+    }
+  }}
+/>
+
+
+
+            {signatures.map((signature, index) => (
+                signature.pageNumber === pageNumber && (
+                    <Rnd
+                        key={signature.id}
+                        size={signature.size}
+                        position={signature.position}
+                        onDragStop={(e, d) => updateSignature(signature.id, { x: d.x, y: d.y }, signature.size)}
+                        onResizeStop={(e, direction, ref, delta, position) => {
+                            updateSignature(signature.id, position, { width: ref.offsetWidth, height: ref.offsetHeight });
+                        }}
+                        onMouseEnter={() => setHoveredSignatureIndex(index)}
+                        onMouseLeave={() => setHoveredSignatureIndex(null)}
+                        style={{
+                            cursor: 'move',
+                            position: 'absolute',
+                            zIndex: hoveredSignatureIndex === index ? 10 : 4,
+                            border: hoveredSignatureIndex === index ? '2px dotted #007BFF' : 'none',
+                        }}
+                    >
+                        <SignatureBox>
+                            <img
+                                src={selectedSignatureImg}
+                                alt="null"
+                            />
+                            {hoveredSignatureIndex === index &&
+                                <EditCard>
+                                    <EditIcon onClick={() => removeSignature(signature.id)}>✖</EditIcon>
+                                </EditCard>
+                            }
+                        </SignatureBox>
+                    </Rnd>
+                )
+            ))}
+        </>
+    )}
+</ImageContainer>
+
             </Container>
         </PageContainer>
     );

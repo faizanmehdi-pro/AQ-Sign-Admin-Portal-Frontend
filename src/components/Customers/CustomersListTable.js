@@ -157,7 +157,7 @@ const handleChangeRowsPerPage = (event) => {
                 <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>Customer Name</TableCell>
                 <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>Email</TableCell>
                 <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>Phone Number</TableCell>
-                <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>Stauts</TableCell>
+                {/* <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>Stauts</TableCell> */}
                 <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -167,15 +167,15 @@ const handleChangeRowsPerPage = (event) => {
                   <TableCell>{row.name}</TableCell>
                   <TableCell>{row.email}</TableCell>
                   <TableCell>{row.phone_number}</TableCell>
-                  <TableCell>{row.customer_status}</TableCell>
+                  {/* <TableCell>{row.customer_status}</TableCell> */}
                   <TableCell>
   <Box display="flex" alignItems="center">
     <IconButton onClick={() => handleEdit(row.id)}>
       <EditIcon sx={{ fontSize: "16px", color: "#1976d2" }} />
     </IconButton>
-    <IconButton onClick={() => handleViewDocument(row.id)}>
+    {/* <IconButton onClick={() => handleViewDocument(row.id)}>
       <ViewIcon sx={{ fontSize: "16px", color: "#1976d2" }} />
-    </IconButton>
+    </IconButton> */}
     <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
     <IconButton onClick={() => handleDelete(row.id)}>
       <DeleteIcon sx={{ fontSize: "16px", color: "red" }} />

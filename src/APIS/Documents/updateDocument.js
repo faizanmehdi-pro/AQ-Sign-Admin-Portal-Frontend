@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-export const updateDocument = async ({ docID, signatures, customer_id }) => {
+export const updateDocument = async ({ docID, signatures, customer_id, canvasSize }) => {
   try {
     const token = localStorage.getItem('authToken');
     const formData = new FormData();
@@ -14,6 +14,7 @@ export const updateDocument = async ({ docID, signatures, customer_id }) => {
       position_y_start: position.y,
       width: size.width,
       height: size.height,
+      image_size: canvasSize
     }));
 
     formData.append('sign_data', JSON.stringify(signDataArray)); // Convert to JSON string

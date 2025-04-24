@@ -134,7 +134,8 @@ export default function DocumentsListTable({ setFileView, setSelectedDocumentID,
                     )}
                   </TableCell>
                   <TableCell>
-                    <Checkbox checked={row.is_signature} disabled />
+                  {/* <Checkbox checked={row.customer[0]?.is_signature || false} disabled /> */}
+                  <Checkbox checked={false} disabled />
                     {row.customer[0]?.name || "N/A"}
                   </TableCell>
                   <TableCell>
