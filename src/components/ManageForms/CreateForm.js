@@ -5,6 +5,7 @@ import { getLabels } from "../../APIS/ManageForms/getLabels";
 import { saveFormData } from "../../APIS/ManageForms/saveFormData";
 import { toast } from "react-toastify";
 import { Loader } from "../Auth/LoginForm";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 const Container = styled.div`
   display: flex;
@@ -20,6 +21,19 @@ const ContainerTopbar = styled.div`
   h1 {
     color: #1976d2;
   }
+`;
+
+const BackButton = styled.button`
+    display: flex;
+    align-items: center;
+    background: none;
+    outline: none;
+    border: none;
+    color: #1976d2;
+    font-size: 16px;
+    font-weight: bold;
+    gap: 5px;
+    cursor: pointer;
 `;
 
 const HiddenFileInput = styled.input`
@@ -133,19 +147,23 @@ export const ListLoader = styled.div`
   }
 `;
 
-const ManageForm = () => {
+const CreateForm = ({onBack}) => {
   const [labels, setLabels] = useState([]);
   const [formData, setFormData] = useState({});
   const [uploadedFile, setUploadedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [generatingForm, setGeneratingForm] = useState(false);
   const [editableLabelIndex, setEditableLabelIndex] = useState(null);
+  const [apiTitles, setAPITitles] = useState([]);
+  const [documentName, setDocumentName] = useState();
 
   const fileUploadMutation = useMutation({
     mutationFn: getLabels,
     onSuccess: (data) => {
-      if (data?.response?.data && Array.isArray(data.response.data)) {
-        const uniqueLabels = [...new Set(data.response.data)];
+      setAPITitles(data?.response?.titles)
+      setDocumentName(data?.response?.document_name)
+      if (data?.response?.indexes && Array.isArray(data.response.indexes)) {
+        const uniqueLabels = [...new Set(data.response.indexes)];
         setLabels(uniqueLabels);
         setFormData(uniqueLabels.reduce((acc, label) => ({ ...acc, [label]: "" }), {}));
         setGeneratingForm(false);
@@ -163,10 +181,11 @@ const ManageForm = () => {
   });
 
   const saveFormMutation = useMutation({
-    mutationFn: saveFormData,
+    mutationFn: (data) => saveFormData(data), // must be a function that returns a promise
     onSuccess: () => {
-      toast.success("Your records added successfully!");
+      toast.success("Form Created successfully!");
       setLoading(false);
+      onBack()
     },
     onError: () => {
       toast.error("Failed to save form data.");
@@ -213,9 +232,18 @@ const ManageForm = () => {
       alert("Please upload a file first.");
       return;
     }
-    const formattedData = Object.entries(formData).map(([key, value]) => ({ [key]: value }));
-    saveFormMutation.mutate({ data: formattedData });
+    // const formattedData = Object.entries(formData).map(([key, value]) => ({ [key]: value }));
+    const formattedData = Object.keys(formData);
+
+    const payloadData = {
+      document_name: documentName,
+      indexes: formattedData,
+      titles: apiTitles,
+    };
+  
+    saveFormMutation.mutate(payloadData);
   };
+  
 
   const handleAddField = () => {
     const newField = `Field ${labels.length + 1}`;
@@ -226,7 +254,10 @@ const ManageForm = () => {
   return (
     <Container>
       <ContainerTopbar>
-        <h1>Generate Form</h1>
+                      <BackButton onClick={onBack}>
+                          <IoMdArrowRoundBack size={22} color="#1976d2" />
+                          Go Back
+                      </BackButton>
         <FileUploadLabel htmlFor="file-upload">
           {fileUploadMutation.isLoading ? "Uploading..." : "Choose File"}
         </FileUploadLabel>
@@ -276,4 +307,4 @@ const ManageForm = () => {
   );
 };
 
-export default ManageForm;
+export default CreateForm;

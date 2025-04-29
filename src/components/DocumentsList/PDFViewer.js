@@ -8,7 +8,7 @@ import logo from "../../assets/images/signatureImage.png";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { updateDocument } from "../../APIS/Documents/updateDocument";
 import { toast } from "react-toastify";
-import { ListLoader, LoaderContainer } from "../ManageForms/ManageForm";
+import { ListLoader, LoaderContainer } from "../ManageForms/CreateForm";
 import { Loader } from "../Auth/LoginForm";
 
 const PageContainer = styled.div`

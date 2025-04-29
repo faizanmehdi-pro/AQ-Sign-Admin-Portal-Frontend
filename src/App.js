@@ -36,7 +36,7 @@ function App() {
           {/* Protected Routes wrapped in MainDrawer */}
           <Route element={<MainDrawer />}>
             <Route
-              path="/customers"
+              path="/dashboard"
               element={
                 <ProtectedRoute>
                   <Customers />
@@ -60,7 +60,7 @@ function App() {
               }
             />
             <Route
-              path="/documents-list"
+              path="/catalog-list"
               element={
                 <ProtectedRoute>
                   <DocumentsList />

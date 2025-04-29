@@ -124,7 +124,7 @@ const LoginForm = () => {
     onSuccess: (data) => {
       toast.success('Login successful!');
       login(data.response.access_token);
-      navigate('/customers');
+      navigate('/dashboard');
     },
     onError: (error) => {
       toast.error(error.message || 'Login failed. Please try again.');

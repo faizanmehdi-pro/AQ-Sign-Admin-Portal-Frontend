@@ -21,7 +21,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCustomer } from "../../APIS/Customer/deleteCustomer";
 import { toast } from "react-toastify";
 import { allCustomersList } from "../../APIS/Customer/allCustomersList";
-import { ListLoader, LoaderContainer } from "../ManageForms/ManageForm";
+import { ListLoader, LoaderContainer } from "../ManageForms/CreateForm";
 import { Loader } from "../Auth/LoginForm";
 import { Button } from "./CustomerForms/Forms.styles";
 

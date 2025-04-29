@@ -1,9 +1,9 @@
 import React from 'react'
-import MangaeForm from '../../components/ManageForms/ManageForm'
+import FormsListComponent from '../../components/ManageForms/FormssListComponents'
 
 const ManageForms = () => {
   return (
-    <MangaeForm />
+    <FormsListComponent />
   )
 }
 

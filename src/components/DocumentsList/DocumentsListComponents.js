@@ -21,7 +21,7 @@ const DocumentsListComponent = () => {
       ) : (
         <DocumentsListComponentContainer>
           <CustomerTopbar>
-            <h1>Documents List</h1>
+            <h1>Catalog</h1>
           </CustomerTopbar>
           <DocumentsListTable 
           setFileView={setFileView} 

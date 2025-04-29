@@ -14,13 +14,13 @@ import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ViewIcon from "@mui/icons-material/RemoveRedEyeRounded";
+// import ViewIcon from "@mui/icons-material/RemoveRedEyeRounded";
 import { Box, Divider, TablePagination, Button, Checkbox } from "@mui/material";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { allDocumentsList } from "../../APIS/Documents/allDocumentsList";
 import { deleteDocument } from "../../APIS/Documents/deleteDocument";
-import { ListLoader, LoaderContainer } from "../ManageForms/ManageForm";
+import { ListLoader, LoaderContainer } from "../ManageForms/CreateForm";
 
 export default function DocumentsListTable({ setFileView, setSelectedDocumentID, setSelectedCustomerID, setSelectedSignatureImg }) {
   const queryClient = useQueryClient();
@@ -102,7 +102,7 @@ export default function DocumentsListTable({ setFileView, setSelectedDocumentID,
       {/* Search Input */}
       <div style={{ display: "flex", gap: "16px", width: "350px" }}>
         <TextField
-          label="Search Document by Name"
+          label="Search Catalog by Name"
           variant="outlined"
           size="small"
           fullWidth
@@ -116,7 +116,7 @@ export default function DocumentsListTable({ setFileView, setSelectedDocumentID,
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>Document Name</TableCell>
+                <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>Catalog Name</TableCell>
                 <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>Customers</TableCell>
                 <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>Actions</TableCell>
               </TableRow>

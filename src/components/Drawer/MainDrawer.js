@@ -17,7 +17,7 @@ import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import PersonOutlineIcon from '@mui/icons-material/Dashboard';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import HistoryIcon from '@mui/icons-material/History';
@@ -36,8 +36,8 @@ const drawerWidth = 290;
 
 const getTitleFromPath = (path) => {
   switch (path) {
-    case '/customers':
-      return 'Customers';
+    case '/dashboard':
+      return 'Dashboard';
     case '/approval-form':
       return 'Send Document for Sign';
     case '/profile':
@@ -47,11 +47,11 @@ const getTitleFromPath = (path) => {
     case '/logs':
       return 'Logs';
     case '/manage-forms':
-      return 'Manage Forms';
+      return 'Forms';
       case '/import-data':
         return 'Import Data';
-        case '/documents-list':
-          return 'Documents List';
+        case '/catalog-list':
+          return 'Catalog';
     default:
       return 'Page';
   }
@@ -105,14 +105,24 @@ function MainDrawer({ children }) {
       </Toolbar>
       <Divider />
       <List>
-        <ListItem key="customers" disablePadding>
-          <ListItemButton component={Link} to="/customers" sx={{ color: currentPath === '/customers' ? topbarColor : inactiveColor }}>
-            <ListItemIcon sx={{ color: currentPath === '/customers' ? topbarColor : inactiveColor }}>
+        <ListItem key="dashboard" disablePadding>
+          <ListItemButton component={Link} to="/dashboard" sx={{ color: currentPath === '/dashboard' ? topbarColor : inactiveColor }}>
+            <ListItemIcon sx={{ color: currentPath === '/dashboard' ? topbarColor : inactiveColor }}>
               <PersonOutlineIcon />
             </ListItemIcon>
-            <ListItemText primary="Customers" primaryTypographyProps={{ style: { color: currentPath === '/customers' ? topbarColor : inactiveColor } }} />
+            <ListItemText primary="Dashboard" primaryTypographyProps={{ style: { color: currentPath === '/dashboard' ? topbarColor : inactiveColor } }} />
           </ListItemButton>
         </ListItem>
+        
+        <ListItem key="manage-forms" disablePadding>
+          <ListItemButton component={Link} to="/manage-forms" sx={{ color: currentPath === '/manage-forms' ? topbarColor : inactiveColor }}>
+            <ListItemIcon sx={{ color: currentPath === '/manage-forms' ? topbarColor : inactiveColor }}>
+              <ArticleIcon  />
+            </ListItemIcon>
+            <ListItemText primary="Forms" primaryTypographyProps={{ style: { color: currentPath === '/manage-forms' ? topbarColor : inactiveColor } }} />
+          </ListItemButton>
+        </ListItem>
+
         <ListItem key="Send Document for Sign" disablePadding>
           <ListItemButton component={Link} to="/approval-form" sx={{ color: currentPath === '/approval-form' ? topbarColor : inactiveColor }}>
             <ListItemIcon sx={{ color: currentPath === '/approval-form' ? topbarColor : inactiveColor }}>
@@ -120,14 +130,23 @@ function MainDrawer({ children }) {
             </ListItemIcon>
             <ListItemText primary="Send Document for Sign" primaryTypographyProps={{ style: { color: currentPath === '/approval-form' ? topbarColor : inactiveColor } }} />
           </ListItemButton>
-        </ListItem><ListItem key="documents-list" disablePadding>
-  <ListItemButton component={Link} to="/documents-list" sx={{ color: currentPath === '/documents-list' ? topbarColor : inactiveColor }}>
-    <ListItemIcon sx={{ color: currentPath === '/documents-list' ? topbarColor : inactiveColor }}>
+        </ListItem>
+        <ListItem key="catalog-list" disablePadding>
+  <ListItemButton component={Link} to="/catalog-list" sx={{ color: currentPath === '/catalog-list' ? topbarColor : inactiveColor }}>
+    <ListItemIcon sx={{ color: currentPath === '/catalog-list' ? topbarColor : inactiveColor }}>
       <DescriptionIcon />
     </ListItemIcon>
-    <ListItemText primary="Documents List" primaryTypographyProps={{ style: { color: currentPath === '/documents-list' ? topbarColor : inactiveColor } }} />
+    <ListItemText primary="Catalog" primaryTypographyProps={{ style: { color: currentPath === '/catalog-list' ? topbarColor : inactiveColor } }} />
   </ListItemButton>
 </ListItem>
+        <ListItem key="import-data" disablePadding>
+          <ListItemButton component={Link} to="/import-data" sx={{ color: currentPath === '/import-data' ? topbarColor : inactiveColor }}>
+            <ListItemIcon sx={{ color: currentPath === '/import-data' ? topbarColor : inactiveColor }}>
+            <FolderOpenIcon />
+            </ListItemIcon>
+            <ListItemText primary="Import Data" primaryTypographyProps={{ style: { color: currentPath === '/import-data' ? topbarColor : inactiveColor } }} />
+          </ListItemButton>
+        </ListItem>
         <ListItem key="groups" disablePadding>
           <ListItemButton component={Link} to="/groups" sx={{ color: currentPath === '/groups' ? topbarColor : inactiveColor }}>
             <ListItemIcon sx={{ color: currentPath === '/groups' ? topbarColor : inactiveColor }}>
@@ -142,22 +161,6 @@ function MainDrawer({ children }) {
               <HistoryIcon />
             </ListItemIcon>
             <ListItemText primary="Logs" primaryTypographyProps={{ style: { color: currentPath === '/logs' ? topbarColor : inactiveColor } }} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem key="manage-forms" disablePadding>
-          <ListItemButton component={Link} to="/manage-forms" sx={{ color: currentPath === '/manage-forms' ? topbarColor : inactiveColor }}>
-            <ListItemIcon sx={{ color: currentPath === '/manage-forms' ? topbarColor : inactiveColor }}>
-              <ArticleIcon  />
-            </ListItemIcon>
-            <ListItemText primary="Manage Forms" primaryTypographyProps={{ style: { color: currentPath === '/manage-forms' ? topbarColor : inactiveColor } }} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem key="import-data" disablePadding>
-          <ListItemButton component={Link} to="/import-data" sx={{ color: currentPath === '/import-data' ? topbarColor : inactiveColor }}>
-            <ListItemIcon sx={{ color: currentPath === '/import-data' ? topbarColor : inactiveColor }}>
-            <FolderOpenIcon />
-            </ListItemIcon>
-            <ListItemText primary="Import Data" primaryTypographyProps={{ style: { color: currentPath === '/import-data' ? topbarColor : inactiveColor } }} />
           </ListItemButton>
         </ListItem>
       </List>
